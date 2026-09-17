@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>속담 맞추기</title>
+<style>
+*{box-sizing:border-box} body{margin:0;font-family:"Malgun Gothic","Noto Sans KR",sans-serif;background:linear-gradient(135deg,#fff1f7,#eaf8ff,#f3ffe9);color:#333}
+button{font:inherit;cursor:pointer;border:0}.app{max-width:980px;min-height:100vh;margin:auto;padding:22px}
+.card{background:#ffffffee;border:5px solid #fff;border-radius:32px;box-shadow:0 10px 30px #7b86a522;padding:30px}
+h1,h2{margin:0}.start{min-height:90vh;display:flex;align-items:center;justify-content:center}.hero{text-align:center;position:relative;overflow:hidden}
+.logo{font-size:clamp(42px,8vw,78px);font-weight:900;letter-spacing:-5px;background:linear-gradient(90deg,#ff719f,#ffb52e,#54c7ff,#7ddc76);-webkit-background-clip:text;color:transparent;text-shadow:3px 3px 0 #fff}
+.sub{font-size:21px;margin:15px 0 28px}.startbtn,.nextbtn{padding:17px 42px;border-radius:50px;background:#ff6fa8;color:white;font-weight:900;font-size:23px;box-shadow:0 7px 0 #df477f}
+.mascots{font-size:70px;margin:25px}.hidden{display:none}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.stage{padding:9px 18px;border-radius:20px;background:#ff8eb6;color:white;font-weight:900}.score{padding:9px 18px;border-radius:20px;background:#fff1a8;font-weight:900}
+.progress{height:14px;background:#e8edf5;border-radius:20px;overflow:hidden;margin:12px 0 25px}.bar{height:100%;background:linear-gradient(90deg,#ff77a8,#ffd45c,#66d8ff);transition:.3s}
+.question{font-size:24px;font-weight:900;margin-bottom:20px}.situation{background:#fff9dc;border-radius:22px;padding:22px;font-size:21px;line-height:1.55;margin-bottom:18px;border:3px dashed #ffd65a}
+.options{display:grid;gap:13px}.opt{padding:16px 20px;border-radius:18px;background:#f4f8ff;border:3px solid #c9ddff;text-align:left;font-weight:800;font-size:19px}.opt:hover{transform:translateY(-2px);background:#eaf5ff}.opt.correct{background:#d9ffd9;border-color:#66cf76}.opt.wrong{background:#ffe0e0;border-color:#ff7e7e}
+.feedback{text-align:center;font-size:23px;font-weight:900;min-height:36px;margin:15px}.actions{text-align:center;margin-top:12px}
+.matchgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.case{background:#eefaff;border:3px solid #9bdcff;border-radius:20px;padding:20px;font-size:18px;line-height:1.5;font-weight:700}
+.picturegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.pic{padding:15px;background:#fff;border:4px solid #d7dce8;border-radius:22px;font-size:58px}.pic span{display:block;font-size:17px;font-weight:900;margin-top:8px}.pic:hover{background:#fff8ce}
+.complete{font-size:30px;font-weight:900;text-align:center;background:#fff8d9;border-radius:22px;padding:25px;margin:20px 0}.celebrate{text-align:center;padding:40px 20px}.bigscore{font-size:72px;font-weight:1000;color:#ff5f95;margin:20px}.trophy{font-size:70px}.small{color:#666}.homebtn{padding:14px 28px;border-radius:30px;background:#78d86e;color:white;font-weight:900;margin:7px}.restart{padding:14px 28px;border-radius:30px;background:#ffd45c;font-weight:900;margin:7px}
+@media(max-width:650px){.card{padding:18px}.matchgrid{grid-template-columns:1fr}.picturegrid{grid-template-columns:repeat(3,1fr)}.pic{font-size:40px;padding:10px}.question{font-size:20px}.logo{letter-spacing:-3px}}
+.confetti{position:fixed;inset:0;pointer-events:none;font-size:30px;animation:fall 1.5s linear forwards;z-index:10}@keyframes fall{0%{transform:translateY(-10vh) rotate(0)}100%{transform:translateY(105vh) rotate(500deg)}}
+</style>
+</head>
+<body><div class="app" id="app"></div>
+<script>
+const P=[
+["가는 말이 고와야 오는 말이 곱다.","친구에게 친절하게 말했더니 친구도 나에게 친절하게 대해 주었어요.","💬"],
+["가랑비에 옷 젖는 줄 모른다.","조금씩 하는 나쁜 습관이 쌓여 나중에는 큰 문제가 되었어요.","🌧️"],
+["가재는 게 편이다.","비슷한 성격을 가진 친구들이 서로 편을 들어 주었어요.","🦀"],
+["갈수록 태산","어려운 일을 하나 해결했더니 더 어려운 일이 또 생겼어요.","⛰️"],
+["같은 값이면 다홍치마","똑같은 가격이라면 더 예쁘고 마음에 드는 물건을 골랐어요.","🎀"],
+["개구리 올챙이 적 생각을 못한다.","예전에는 자기도 실수했으면서 다른 사람의 실수를 심하게 놀렸어요.","🐸"],
+["내 코가 석 자.","내 일도 바쁜데 친구의 부탁까지 들어주기 어려운 상황이에요.","👃"],
+["구더기 무서워 장 못 담글까.","실패가 걱정되어도 해야 할 일을 아예 포기하면 안 돼요.","🫙"],
+["구슬이 서 말이라도 꿰어야 보배다.","좋은 아이디어가 많아도 실제로 정리하고 완성해야 가치가 생겨요.","📿"],
+["귀에 걸면 귀걸이, 코에 걸면 코걸이.","같은 말을 상황에 따라 자기에게 유리하게 다르게 해석해요.","👂"],
+["그림의 떡.","갖고 싶지만 실제로는 가질 수 없는 것을 보고만 있어요.","🍰"],
+["뛰는 놈 위에 나는 놈 있다.","달리기를 아주 잘하는 아이보다 더 빠른 아이가 나타났어요.","🏃"],
+["낫 놓고 기역 자도 모른다.","바로 눈앞에 있는 쉬운 것도 알아보지 못해요.","🪓"],
+["누워서 침 뱉기","남을 험담했는데 결국 그 말이 자기에게도 돌아왔어요.","🛏️"],
+["다 된 죽에 코 풀기","거의 다 끝낸 일을 마지막 실수로 망쳐 버렸어요.","🥣"],
+["닭 잡아 먹고 오리발 내민다.","자기가 한 일을 들키고도 하지 않았다고 잡아떼요.","🐔"],
+["도둑이 제 발 저린다.","아무도 의심하지 않았는데 자기가 먼저 변명해요.","🦶"],
+["돌다리도 두들겨 보고 건너라","안전해 보여도 중요한 일은 미리 확인하고 조심해야 해요.","🌉"],
+["개밥에 도토리.","친구들 사이에서 혼자 어울리지 못하고 겉도는 사람이 되었어요.","🐶"],
+["고래 싸움에 새우 등 터진다.","힘센 두 사람이 다투는 바람에 아무 상관 없는 사람이 피해를 봤어요.","🐋"],
+["고양이 목에 방울 달기.","모두 필요하다고 생각하지만 실제로 할 사람은 아무도 없어요.","🐱"]
+];
+const s1=[0,1,2,3,4,5,6,7,8,9], s2=[10,11,12,13,14,15], s3=[16,17,18,19,20];
+let stage=0,idx=0,total=0,stageScore=0,locked=false;
+function renderStart(){app.innerHTML=`<div class="start"><div class="card hero"><div class="mascots">🐱 🐰 🐻</div><div class="logo">속담 맞추기</div><div class="sub">재미있는 상황과 그림을 보고 속담 탐정이 되어 보세요!</div><button class="startbtn" onclick="start()">게임 시작 ▶</button><p class="small">총 3단계 · 21개 속담</p></div></div>`}
+function start(){stage=1;idx=0;total=0;stageScore=0;render()}
+function header(){let max=stage==1?10:stage==2?6:5;let pct=(idx/max)*100;return `<div class="top"><div class="stage">${stage}단계</div><div class="score">전체 점수 ⭐ ${total}</div></div><div class="progress"><div class="bar" style="width:${pct}%"></div></div>`}
+function render(){
+ locked=false;
+ if(stage===1) render1(); else if(stage===2) render2(); else render3();
+}
+function render1(){
+ let pi=s1[idx],p=P[pi], choices=[pi]; while(choices.length<3){let n=Math.floor(Math.random()*21);if(!choices.includes(n))choices.push(n)} choices.sort(()=>Math.random()-.5);
+ app.innerHTML=`<div class="card">${header()}<div class="question">다음 상황에 어울리는 속담은 무엇일까요? 💡</div><div class="situation">${p[1]}</div><div class="options">${choices.map((c,i)=>`<button class="opt" onclick="answer1(${c},this)">${i+1}. ${P[c][0]}</button>`).join('')}</div><div class="feedback" id="fb"></div><div class="actions" id="act"></div></div>`;
+}
+function answer1(c,b){if(locked)return;locked=true;let correct=c===s1[idx];document.querySelectorAll('.opt').forEach(x=>x.disabled=true);b.classList.add(correct?'correct':'wrong');if(correct){total+=10;stageScore+=10;fb.textContent="🎉 정답이에요! +10점";sound()}else fb.textContent="💡 아쉬워요! 정답은 「"+P[s1[idx]][0]+"」";nextButton()}
+function nextButton(){act.innerHTML=`<button class="nextbtn" onclick="next()">다음 문제 ▶</button>`}
+function render2(){
+ let pi=s2[idx],p=P[pi];let distract=P.filter((x,i)=>!s2.includes(i))[Math.floor(Math.random()*15)];
+ let cases=[p[1],distract[1]].sort(()=>Math.random()-.5);
+ app.innerHTML=`<div class="card">${header()}<div class="question">이 속담에 알맞은 생활 속 상황을 골라 보세요! 🔎</div><div class="complete">${p[0]}</div><div class="matchgrid">${cases.map((c,i)=>`<button class="case" onclick="answer2(this,${c===p[1]})">${i+1}. ${c}</button>`).join('')}</div><div class="feedback" id="fb"></div><div class="actions" id="act"></div></div>`;
+}
+function answer2(b,correct){if(locked)return;locked=true;document.querySelectorAll('.case').forEach(x=>x.disabled=true);if(correct){total+=10;stageScore+=10;b.style.background='#d9ffd9';fb.textContent="🎉 정답이에요! +10점";sound()}else{b.style.background='#ffe0e0';fb.textContent="💡 다시 생각해 볼까요? 정답은 첫 번째 상황과 잘 맞아요.";};nextButton()}
+function render3(){
+ let pi=s3[idx],p=P[pi];
+ let opts=[["🦶","발"],["🐔","닭"],["🪨","돌"],["🐋","고래"],["🐱","고양이"],["🍤","새우"],["🌉","다리"],["🥣","죽"]];
+ let key={16:"닭",17:"발",18:"돌",19:"고양이",20:"새우"}[pi];
+ let prefix={16:"닭 잡아 먹고 ",17:"도둑이 제",18:"",19:"고양이 목에 방울 달기",20:"고래 싸움에"}[pi];
+ let suffix={16:" 오리발 내민다.",17:" 제 발 저린다.",18:"다리도 두들겨 보고 건너라",19:"",20:" 등 터진다."}[pi];
+ let shown=pi==18?"돌다리도 ___ 보고 건너라":pi==19?"고양이 목에 ___ 달기":pi==17?"도둑이 제 ___ 저린다":pi==16?"닭 잡아 먹고 ___ 내민다":"고래 싸움에 ___ 등 터진다";
+ app.innerHTML=`<div class="card">${header()}<div class="question">생활 속 예시를 읽고, 빈칸에 들어갈 그림을 클릭하세요! 🖼️</div><div class="situation">${p[1]}</div><div class="complete">${shown}</div><div class="picturegrid">${opts.map(o=>`<button class="pic" onclick="answer3(this,'${o[1]}','${key}')">${o[0]}<span>${o[1]}</span></button>`).join('')}</div><div class="feedback" id="fb"></div><div class="actions" id="act"></div></div>`;
+}
+function answer3(b,val,key){if(locked)return;locked=true;document.querySelectorAll('.pic').forEach(x=>x.disabled=true);if(val===key){total+=10;stageScore+=10;b.style.borderColor='#6dce7a';fb.textContent="🎉 정답이에요! +10점";sound();let p=P[s3[idx]];setTimeout(()=>{fb.textContent="✨ 완성된 속담: "+p[0]},500)}else{b.style.borderColor='#ff7777';fb.textContent="💡 아쉬워요! 그림을 다시 생각해 보세요.";locked=false;document.querySelectorAll('.pic').forEach(x=>x.disabled=false);return}nextButton()}
+function next(){idx++;let max=stage==1?10:stage==2?6:5;if(idx>=max){finishStage()}else render()}
+function finishStage(){
+ sound();confetti();let nextStage=stage<3?`<button class="nextbtn" onclick="stage++;idx=0;stageScore=0;render()">다음 단계로 ▶</button>`:`<button class="restart" onclick="start()">다시 하기 ↻</button><button class="homebtn" onclick="renderStart()">처음으로 ⌂</button>`;
+ app.innerHTML=`<div class="card celebrate"><div class="trophy">🏆</div><h2>${stage}단계 완료!</h2><p>정말 잘했어요! 🎊</p><div>이번 단계에서 얻은 점수</div><div class="bigscore">${stageScore}점</div><h3>현재까지의 전체 점수 ⭐ ${total}점</h3><div style="margin-top:25px">${nextStage}</div></div>`;
+}
+function confetti(){let chars=["🎉","⭐","🌈","🎈","✨","💖","🍀"];for(let i=0;i<35;i++){let e=document.createElement('div');e.className='confetti';e.textContent=chars[i%chars.length];e.style.left=Math.random()*100+"%";e.style.animationDelay=Math.random()*.7+"s";document.body.appendChild(e);setTimeout(()=>e.remove(),2200)}}
+function sound(){try{let C=window.AudioContext||window.webkitAudioContext,c=new C();let o=c.createOscillator(),g=c.createGain();o.type="triangle";o.frequency.setValueAtTime(523,c.currentTime);o.frequency.exponentialRampToValueAtTime(1046,c.currentTime+.35);g.gain.setValueAtTime(.0001,c.currentTime);g.gain.exponentialRampToValueAtTime(.18,c.currentTime+.03);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.55);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+.55)}catch(e){}}
+renderStart();
+</script></body></html>
